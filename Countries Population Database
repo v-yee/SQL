@@ -1,0 +1,89 @@
+In this project, I am querying a large database to find out 
+the relationship between fertility rate and population change in countries.
+   
+Data: Countries and dependent territories, 2020
+  Adapted from http://www.worldometers.info/world-population/population-by-country/
+  Does not include rows which had "N.A." values, so some territories are missing.
+
+
+
+-- to find out general information
+SELECT name, MAX(population) AS "Highest Population" FROM countries;
+SELECT name, MIN(population) AS "Lowest Population" FROM countries;
+SELECT AVG(population) AS "Average Population per Country" FROM countries;
+
+-- to find out which country has a low fertility rate
+SELECT name, fertility_rate, 
+CASE
+   WHEN fertility_rate < 2 then "Low fertility rate"
+   WHEN fertility_rate > 4 then "High fertility rate"
+   ELSE "Normal fertility rate"
+END as "Fertility_Score"
+FROM countries ORDER BY fertility_rate;
+
+-- to find out which country has a decreasing population rate
+SELECT name, population_change, percent_one_year_change,
+CASE
+  WHEN percent_one_year_change > 2 then "significant increase"
+  WHEN percent_one_year_change > 1 then "minor increase"
+  WHEN percent_one_year_change > 0 then "stagnation" 
+  ELSE "decrease"
+ END as "population_rate"
+ FROM countries ORDER BY percent_one_year_change;
+
+-- to find out countries that have a low fertility rate and decreasing population rate
+SELECT name,
+CASE
+  WHEN fertility_rate < 2 then "Low fertility rate"
+  WHEN fertility_rate > 4 then "High fertility rate"
+  ELSE "Normal fertility rate"
+END as "Fertility_Score",
+CASE
+  WHEN percent_one_year_change > 2 then "significant increase"
+  WHEN percent_one_year_change > 1 then "minor increase"
+  WHEN percent_one_year_change > 0 then "stagnation" 
+  ELSE "decrease"
+ END as "population_rate"
+FROM countries WHERE Fertility_Score = "Low fertility rate" 
+AND population_rate = "decrease" 
+GROUP BY name;
+
+-- to find out countries that have a normal fertility and decreasing population rates
+SELECT name, 
+CASE
+  WHEN fertility_rate < 2 then "Low fertility rate"
+  WHEN fertility_rate > 4 then "High fertility rate"
+  ELSE "Normal fertility rate"
+END as "Fertility_Score",
+CASE
+  WHEN percent_one_year_change > 2 then "significant increase"
+  WHEN percent_one_year_change > 1 then "minor increase"
+  WHEN percent_one_year_change > 0 then "stagnation" 
+  ELSE "decrease"
+ END as "population_rate"
+ FROM countries WHERE Fertility_Score = "Normal fertility rate" AND population_rate = "decrease";
+ 
+-- for countries with a lower population, which ones have a decreasing population rate?
+SELECT name, population, 
+CASE
+  WHEN percent_one_year_change > 2 then "significant increase"
+  WHEN percent_one_year_change > 1 then "minor increase"
+  WHEN percent_one_year_change > 0 then "stagnation" 
+  ELSE "decrease"
+ END as "population_rate"
+FROM countries GROUP BY name 
+HAVING population < 8655535 
+AND population_rate = "decrease";
+ 
+
+-- for countries with a low fertility rate, which ones of them have a median_age of more than 40?
+SELECT name, median_age,
+CASE
+   WHEN fertility_rate < 2 then "Low fertility rate"
+   WHEN fertility_rate > 4 then "High fertility rate"
+   ELSE "Normal fertility rate"
+END as "Fertility_Score"
+FROM countries 
+WHERE median_age > 40 
+AND Fertility_Score = "Low fertility rate"
+GROUP BY median_age;
