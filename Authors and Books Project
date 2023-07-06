@@ -1,0 +1,109 @@
+/*I have created a small project to recommend me some books. Below is a short list of famous authors that have been recommended to me by Google. */
+
+CREATE TABLE authors (
+id INTEGER PRIMARY KEY,
+name TEXT, 
+books_written INTEGER,
+genre TEXT);
+
+INSERT INTO authors VALUES (1, 'Agatha Christie', 74, 'murder mystery detective fiction crime fiction thriller');
+INSERT INTO authors VALUES (2, 'Stephen King', 65, 'horror fantasy supernatural fiction drama crime fiction suspense thriller');
+INSERT INTO authors VALUES (3, 'J. K. Rowling', 22, 'fantasy drama young adult fiction crime fiction');
+INSERT INTO authors VALUES (4, 'C. S. Lewis', 42, 'fantasy science fiction childrens literature');
+INSERT INTO authors VALUES (5, 'Dr. Seuss', 47, 'childrens literature');
+INSERT INTO authors VALUES (6, 'Arthur Conan Doyle', 32, 'detective fiction fantasy science fiction historical novels non-fiction');
+INSERT INTO authors VALUES (7, 'Ernest Hemingway', 15, 'modernist literature fiction non-fiction');
+INSERT INTO authors VALUES (8, 'Jane Austen', 6, 'romance comedy realism literature');
+INSERT INTO authors VALUES (9, 'Charles Dickens', 20, 'gothic romance realism literature supernatural fantasy');
+INSERT INTO authors VALUES(10, 'Mark Twain', 55, 'adventure fiction speculative fiction travelogue literary criticism autobiography');
+INSERT INTO authors VALUES (11, 'F. Scott Fitzgerald', 8, 'realism literature fiction tragedy');
+
+/* I listed out some general information about the recommended authors*/
+
+CREATE TABLE authorinfo (
+author_id INTEGER PRIMARY KEY,
+age INTEGER,
+nationality TEXT,
+status TEXT);
+
+INSERT INTO authorinfo VALUES (1, 85, 'British', 'deceased');
+INSERT INTO authorinfo VALUES (2, 75, 'American', 'alive');
+INSERT INTO authorinfo VALUES (3, 57, 'British', 'alive');
+INSERT INTO authorinfo VALUES (4, 64, 'British', 'deceased');
+INSERT INTO authorinfo VALUES (5, 87, 'American', 'deceased');
+INSERT INTO authorinfo VALUES (6, 71, 'British', 'deceased');
+INSERT INTO authorinfo VALUES (7, 61, 'American', 'deceased');
+INSERT INTO authorinfo VALUES (8, 41, 'British', 'deceased');
+INSERT INTO authorinfo VALUES (9, 58, 'British', 'deceased');
+INSERT INTO authorinfo VALUES (10, 74, 'American', 'deceased');
+INSERT INTO authorinfo VALUES (11, 44, 'American', 'deceased');
+
+/* Over here I have curated a top 10 list from a website to see which author's works have been included. 
+
+DATA ADAPTED FROM: https://www.theladders.com/career-advice/the-10-best-books-of-all-time-chosen-by-125-famous-authors */
+
+CREATE TABLE top_10_books (
+id INTEGER PRIMARY KEY,
+title text, 
+author text);
+
+INSERT INTO top_10_books VALUES (1, 'Anna Karenina', 'Leo Tolstoy');
+INSERT INTO top_10_books VALUES (2, 'Madame Bovary', 'Gustav Flaubert');
+INSERT INTO top_10_books VALUES (3, 'War and Peace', 'Leo Tolstoy');
+INSERT INTO top_10_books VALUES (4, 'Lolita', 'Vladimir Nabokov');
+INSERT INTO top_10_books VALUES (5, 'The Adventures of Huckleberry Finn', 'Mark Twain');
+INSERT INTO top_10_books VALUES (6, 'Hamlet', 'William Shakespeare');
+INSERT INTO top_10_books VALUES (7, 'The Great Gatsby', 'F. Scott Fitzgerald');
+INSERT INTO top_10_books VALUES (8, 'In Search of Lost Time', 'Marcel Proust');
+INSERT INTO top_10_books VALUES (9, 'The Stories of Anton Chekhov' ,'Anton Checkhov');
+INSERT INTO top_10_books VALUES (10, 'Middlemarch', 'George Eliot');
+
+/*My friend has also recommended me a list of books to try*/
+
+CREATE TABLE friend_list (
+id INTEGER PRIMARY KEY,
+title TEXT,
+author TEXT);
+
+INSERT INTO friend_list VALUES (1, 'Pride and Prejudice', 'Jane Austen');
+INSERT INTO friend_list VALUES (2, 'To Kill a Mockingbird', 'Harper Lee');
+INSERT INTO friend_list VALUES (3, 'The Adventures of Sherlock Holmes', 'Arthur Conan Doyle');
+INSERT INTO friend_list VALUES (4, 'Murder on the Orient Express', 'Agatha Christie');
+
+/* Compiling information about the authors */
+
+SELECT authors.name, authorinfo.age, authorinfo.nationality, authorinfo.status
+FROM authors
+JOIN authorinfo
+ON authorinfo.author_id = authors.id;
+
+
+/* Searching for authors that fit my genre preference*/
+
+Select id, name, genre
+FROM authors
+WHERE genre LIKE '%romance%' 
+OR genre LIKE '%mystery%' 
+OR genre LIKE '%detective%'
+OR genre LIKE '%tragedy%'; 
+
+/* Since I have a list of authors. I also want to know which of these author's books have been featured in the top 10 list and my friend's list.*/
+
+SELECT authors.name, top_10_books.title
+FROM authors
+JOIN top_10_books
+ON authors.name = top_10_books.author
+WHERE authors.id IN (1, 6, 8, 9, 11);
+
+SELECT friend_list.author, friend_list.title 
+FROM authors
+JOIN friend_list
+ON friend_list.author = authors.name;
+
+/* I also want to find out which authors, that Google recommended, has made it onto the top 10 list*/
+
+SELECT top_10_books.author
+FROM authors
+JOIN top_10_books
+ON authors.name = top_10_books.author;
+
