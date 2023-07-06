@@ -1,0 +1,36 @@
+/* I started this project to visualise how a calorie tracking app's SQL would look like across the day. */
+
+CREATE TABLE loseit (ID INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, morning TEXT, calories_morning INTEGER, lunch TEXT, calories_lunch INTEGER, dinner TEXT, calories_dinner INTEGER);
+
+INSERT INTO loseit VALUES (1, 1, "oatmeal", 250, "pizza", 700, "porridge", 350);
+INSERT INTO loseit VALUES (2, 1, "chocolate muffin", 400, "bagel sandwich", 550, "protein shake", 250);
+INSERT INTO loseit VALUES (3, 1, "egg sandwich", 550, "pad thai", 750, "sushi platter", 650);
+
+/*check table*/
+SELECT * FROM loseit;
+
+/*data changed*/
+UPDATE loseit set morning = "milkshake" 
+WHERE ID = 1;
+UPDATE loseit set calories_morning = 450
+WHERE ID = 1;
+
+/*check changes*/
+SELECT * FROM loseit;
+
+/* added 2 new categories*/
+ALTER TABLE loseit ADD snacks TEXT default "unknown"; 
+ALTER TABLE loseit ADD calories_snacks INTEGER default "unknown";
+
+/*data changed*/
+UPDATE loseit set snacks = "oreos" 
+WHERE ID = 2;
+UPDATE loseit set calories_snacks = "150" 
+WHERE ID = 2; 
+
+/* row deletion */
+DELETE FROM loseit 
+WHERE ID = 3;
+
+/*check changes*/
+SELECT * FROM loseit;
