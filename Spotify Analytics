@@ -1,0 +1,109 @@
+/* For this project, I downloaded Spotify data from Kaggle and created a table to perform analytics on the data using SQL. */ 
+
+/* Data adapted: Spotify top 50 songs in 2021 - https://www.kaggle.com/datasets/equinxx/spotify-top-50-songs-in-2021?select=spotify_top50_2021.csv */
+
+/* Creating the table: */
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness text NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL )
+
+/* I inserted the Spotify Data .csv into the table then explored the data using the following SQL. */ 
+
+/* Which artist are above the average popularity, danceability, and energy? */
+
+SELECT id, artist_name, track_name 
+FROM BIT_DB.Spotifydata
+WHERE energy > (SELECT avg(energy) 
+                FROM Spotifydata)
+AND danceability > (SELECT avg(danceability) 
+                    FROM Spotifydata)
+AND popularity > (SELECT avg(popularity) 
+                  FROM Spotifydata)
+
+/* Who are the top 10 artists based on popularity? */
+
+SELECT id, artist_name
+FROM Spotifydata
+ORDER BY popularity DESC 
+LIMIT 10
+
+/* Which artist released the longest song?*/
+SELECT artist_name, track_name, max(duration_ms)
+FROM Spotifydata
+
+/* Which artist's song has the highest and lowest popularity? */
+SELECT artist_name, max(popularity)
+FROM Spotifydata
+UNION ALL 
+SELECT artist_name, min(popularity)
+FROM Spotifydata
+
+/* How many times does the artist with the most popular song and least popular song appeared?*/ 
+SELECT artist_name, max(popularity), count(artist_name)
+FROM Spotifydata
+WHERE artist_name = 'Olivia Rodrigo'
+UNION ALL 
+SELECT artist_name, min(popularity), count(artist_name)
+FROM Spotifydata
+WHERE artist_name = 'BTS'
+
+/* Which songs have instrumentals? */
+SELECT track_name, instrumentalness
+FROM Spotifydata
+WHERE instrumentalness > 0
+
+/* What is the average tempo and which tracks are above average in tempo? */
+SELECT avg(tempo)
+FROM Spotifydata;
+
+SELECT artist_name, track_name
+FROM Spotifydata
+WHERE tempo > (SELECT avg(tempo)
+               FROM Spotifydata)
+
+/* Categorise the data according to tempo, and find out the percentage makeup of each category*/
+SELECT count(track_name)/50.0*100,
+CASE
+  WHEN tempo BETWEEN 65 and 72 THEN 'Adagietto'
+  WHEN tempo BETWEEN 72 and 86 THEN 'Andante'
+  WHEN tempo BETWEEN 86 and 98 THEN 'Moderato'
+  WHEN tempo BETWEEN 98 and 110 THEN 'Allegretto'
+  WHEN tempo BETWEEN 110 and 132 THEN 'Allegro'
+  WHEN tempo BETWEEN 132 and 167 THEN 'Vivace'
+  WHEN tempo BETWEEN 167 and 178 THEN 'Presto'
+  WHEN tempo > 178.0 THEN 'Prestissimo'
+  ELSE 'Adagio'
+END AS tempo_mark
+FROM spotifydata
+GROUP BY tempo_mark
+ORDER BY tempo ASC
+
+/* Calculate the average popularity of the artists. 
+Then, for every artist with an average popularity of 90 or above, show their name, 
+their average popularity, and label them as a "Top Star". */
+
+WITH avgpop_CTE AS (
+  SELECT s.artist_name, avg(s.popularity) as avg_pop
+  FROM Spotifydata s
+  GROUP BY artist_name)
+
+SELECT artist_name, avgpop, 'Top_Star' AS tag
+FROM avgpop_CTE
+WHERE avg_pop >= 90;
+
