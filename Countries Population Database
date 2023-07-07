@@ -1,9 +1,9 @@
-In this project, I am querying a large database to find out 
+/* In this project, I am querying a large database to find out 
 the relationship between fertility rate and population change in countries.
    
 Data: Countries and dependent territories, 2020
   Adapted from http://www.worldometers.info/world-population/population-by-country/
-  Does not include rows which had "N.A." values, so some territories are missing.
+  Does not include rows which had "N.A." values, so some territories are missing. */
 
 CREATE TABLE countries
 (id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -220,12 +220,12 @@ INSERT INTO countries(name,population,percent_one_year_change,population_change,
 INSERT INTO countries(name,population,percent_one_year_change,population_change,density_per_sq_km,area_sq_km,net_migrants,fertility_rate,median_age,percent_of_world_pop) VALUES ('Seychelles',98347,0.62,608,214,460,-200,2.50,34.00,0);
 INSERT INTO countries(name,population,percent_one_year_change,population_change,density_per_sq_km,area_sq_km,net_migrants,fertility_rate,median_age,percent_of_world_pop) VALUES ('Antigua and Barbuda',97929,0.84,811,223,440,0,2.00,34.00,0);
 
--- to find out general information
+/* Show the country with the highest population, lowest population and find the average population per country. */
 SELECT name, MAX(population) AS "Highest Population" FROM countries;
 SELECT name, MIN(population) AS "Lowest Population" FROM countries;
 SELECT AVG(population) AS "Average Population per Country" FROM countries;
 
--- to find out which country has a low fertility rate
+/* Find out which country has a low fertility rate. */
 SELECT name, fertility_rate, 
 CASE
    WHEN fertility_rate < 2 then "Low fertility rate"
@@ -234,7 +234,7 @@ CASE
 END as "Fertility_Score"
 FROM countries ORDER BY fertility_rate;
 
--- to find out which country has a decreasing population rate
+/* Find out which country has a decreasing population rate and categorise them */
 SELECT name, population_change, percent_one_year_change,
 CASE
   WHEN percent_one_year_change > 2 then "significant increase"
@@ -244,7 +244,7 @@ CASE
  END as "Population_Rate"
  FROM countries ORDER BY percent_one_year_change;
 
--- to find out countries that have a low fertility rate and decreasing population rate
+/* Categorise and find out countries that have a low fertility rate and decreasing population rate */
 SELECT name,
 CASE
   WHEN fertility_rate < 2 then "Low fertility rate"
@@ -261,7 +261,7 @@ FROM countries WHERE Fertility_Score = "Low fertility rate"
 AND Population_Rate = "decrease" 
 GROUP BY name;
 
--- to find out countries that have a normal fertility and decreasing population rates
+/* Find out countries that have a normal fertility and decreasing population rates */
 SELECT name, 
 CASE
   WHEN fertility_rate < 2 then "Low fertility rate"
@@ -276,7 +276,7 @@ CASE
  END as "Population_Rate"
  FROM countries WHERE Fertility_Score = "Normal fertility rate" AND Population_Rate = "decrease";
  
--- for countries with a lower population, which ones have a decreasing population rate?
+/* For countries with a lower population, which ones have a decreasing population rate? */
 SELECT name, population, 
 CASE
   WHEN percent_one_year_change > 2 then "significant increase"
@@ -289,7 +289,7 @@ HAVING population < 8655535
 AND Population_Rate = "decrease";
  
 
--- for countries with a low fertility rate, which ones of them have a median_age of more than 40?
+/* For countries with a low fertility rate, which ones of them have a median_age of more than 40? */
 SELECT name, median_age,
 CASE
    WHEN fertility_rate < 2 then "Low fertility rate"
