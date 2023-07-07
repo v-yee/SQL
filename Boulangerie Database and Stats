@@ -1,7 +1,6 @@
--- store database for a simple boulangerie. 
-
--- each item starts with a quantity of 20 at the start of the day.
--- the following are the inputted values at the end of the day. 
+/* A store database for a simple boulangerie. 
+Each item starts with a quantity of 20 at the start of the day. 
+The following are the inputted values at the end of the day. */ 
 
 CREATE TABLE boulangerie 
 (id INTEGER PRIMARY KEY, 
@@ -26,11 +25,11 @@ INSERT INTO boulangerie VALUES (13, "Milk Pudding", 12, 'Sweets', 2.5);
 INSERT INTO boulangerie VALUES (14, "Cinnamon Rolls", 4, 'Pastry', 2.4);
 INSERT INTO boulangerie VALUES (15, "Bread Loaf", 18, 'Bread', 2);
 
--- quantity of item remaining
+/* quantity of item remaining */
 SELECT name, quantity 
 FROM boulangerie;
 
--- name and price of the highest priced item, and lowest priced item. 
+/* name and price of the highest priced item, and lowest priced item */ 
 SELECT name, price 
 FROM boulangerie
 WHERE price = (select max(price) from boulangerie)
@@ -39,18 +38,18 @@ SELECT name, price
 FROM boulangerie
 WHERE price = (select min(price) from boulangerie);
 
--- display database ordered by price
+/* display database ordered by price */
 Select * 
 FROM 
 ORDER BY price desc;
 
--- avg price of items in each section
+/* avg price of items in each section */
 SELECT section, ROUND(AVG(price),2)
 FROM boulangerie
 GROUP BY section;
 
--- assess the popularity of the item, determine whether the item should be maintained, 
-   removed, or have its price increased. 
+/* assess the popularity of the item, determine whether the item should be maintained, 
+   removed, or have its price increased. */ 
 SELECT name, price,
 CASE 
   WHEN quantity >=15 THEN 'Not Popular'
